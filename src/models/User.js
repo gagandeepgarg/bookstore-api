@@ -5,9 +5,11 @@ import uniqueValidator from 'mongoose-unique-validator';
 
 // add uniqueness and email validations
 const userSchema = new mongoose.Schema({
-    username:{type:String, required:true,lowercase:true, index:true, unique:true},
+    username:{type:String, required:true,lowercase:true, unique:true},
+    email:{type:String, required:true,lowercase:true, index:true, unique:true},
     passwordHash:{type:String, required:true},
-    confirmed: {type:Boolean, default:false}
+    confirmed: {type:Boolean, default:false},
+    confirmationToken:{type:String, default:''},
 },
 {timestamps:true});
 
@@ -16,7 +18,9 @@ userSchema.methods.isValidPassword = function isValidPassword(password){
 };
 userSchema.methods.generateJWT = function generateJWT(){
     return jwt.sign({
-        username:this.username
+        username:this.username,
+        email: this.email,
+        confirmed: this.confirmed
     },process.env.JWT_SECRET)
 };
 
@@ -29,6 +33,9 @@ userSchema.methods.toAuthJson = function toAuthJson(){
 };
 userSchema.methods.setPassword = function setPassword(password){
     this.passwordHash = bcrypt.hashSync(password, 10);
+}
+userSchema.methods.setConfirmationToken = function setConfirmationToken() {
+    this.confirmationToken =  this.generateJWT();
 }
 userSchema.plugin(uniqueValidator, {message:'This username is already taken'});
 

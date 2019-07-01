@@ -5,13 +5,14 @@ import parseErrors from '../utils/parseErrors'
 const router = express.Router();
 
 router.post('/', (req, res) => {
-    const { username, password } = req.body.user;
-    const user = new User({ username })
+    const { username, password, email } = req.body.user;
+    const user = new User({ username, email })
     user.setPassword(password);
+    user.setConfirmationToken();
     user.save()
     .then(userRes => res.json({ user: userRes.toAuthJson() }))
-    .catch(err=>{ 
-        res.json.status(400)({errors: parseErrors(err.errors)})
+    .catch(err=>{
+        res.status(400).json({errors: parseErrors(err.errors)})
     });
 });
 
