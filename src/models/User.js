@@ -37,6 +37,9 @@ userSchema.methods.setPassword = function setPassword(password){
 userSchema.methods.setConfirmationToken = function setConfirmationToken() {
     this.confirmationToken =  this.generateJWT();
 }
+userSchema.methods.generateConfirmationUrl = function generateConfirmationUrl(){
+    return `${process.env.HOST}/confirmation/${this.confirmationToken}`;
+}
 userSchema.plugin(uniqueValidator, {message:'This username is already taken'});
 
 export default mongoose.model('User', userSchema);
