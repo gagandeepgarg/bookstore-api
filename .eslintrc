@@ -27,6 +27,7 @@
                     ".jsx"
                 ]
             }
-        ]
+        ],
+        "no-underscore-dangle" : ["warning", { "allow": ["_id"] }]
     }
 }

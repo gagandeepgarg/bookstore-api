@@ -17,11 +17,25 @@ export function sendConfirmationEmail(user){
     const transport = setup();
     const email ={
         from,
+        Subject:"Email Confirmation",
         to: user.email,
         text:`
         welcome to bookstore. Plese confirm your email address.
         
         ${user.generateConfirmationUrl()}`
+    }
+    transport.sendMail(email);
+}
+export function sendResetPasswordEmail(user){
+    const transport = setup();
+    const email ={
+        from,
+        to: user.email,
+        Subject:"Reset Password",
+        text:`
+        Please use the below link to reset your password.
+        
+        ${user.generateResetPasswordUrl()}`
     }
     transport.sendMail(email);
 }

@@ -24,6 +24,13 @@ userSchema.methods.generateJWT = function generateJWT(){
     },process.env.JWT_SECRET)
 };
 
+userSchema.methods.generateResetPasswordToken = function generateResetPasswordToken(){
+    return jwt.sign({
+        _id: this._id
+    },process.env.JWT_SECRET,
+    {expiresIn:"1h"})
+};
+
 userSchema.methods.toAuthJson = function toAuthJson(){
     return {
         username: this.username,
@@ -40,6 +47,11 @@ userSchema.methods.setConfirmationToken = function setConfirmationToken() {
 userSchema.methods.generateConfirmationUrl = function generateConfirmationUrl(){
     return `${process.env.HOST}/confirmation/${this.confirmationToken}`;
 }
+userSchema.methods.generateResetPasswordUrl = function generateResetPasswordUrl(){
+    return `${process.env.HOST}/reset-password/${this.generateResetPasswordToken()}`;
+}
+
+
 userSchema.plugin(uniqueValidator, {message:'This username is already taken'});
 
 export default mongoose.model('User', userSchema);
