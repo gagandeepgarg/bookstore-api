@@ -39,3 +39,19 @@ export function sendResetPasswordEmail(user){
     }
     transport.sendMail(email);
 }
+
+export function sendResetPasswordConfirmationEmail(user){
+    const transport = setup();
+    const email ={
+        from,
+        to: user.email,
+        Subject:"Password Reset Successfully",
+        text:`Dear ${user.username},
+        Your password has been reset successfully on ${new Date()}.
+        If you have not performed this activity, 
+        Please contact us at support@bookstore.com
+        `
+    }
+    transport.sendMail(email);
+}
+
