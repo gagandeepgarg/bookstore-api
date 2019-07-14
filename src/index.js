@@ -8,7 +8,8 @@ import dotenv from 'dotenv';
 import auth from './routes/auth';
 import users from './routes/user';
 import books from './routes/book';
-
+import carts from './routes/cart';
+import Cart from './models/Cart';
 
 dotenv.config();
 const app = express();
@@ -20,8 +21,11 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true});
 app.use('/api/auth', auth);
 app.use('/api/users', users);
 app.use('/api/books', books);
+app.use('/api/carts', carts);
+
 app.get("/*",(req,res)=>{
     res.sendFile(path.join(__dirname,"index.html"));
 });
+
 
 app.listen(8080, ()=>console.log("running at localhost:8080"));
