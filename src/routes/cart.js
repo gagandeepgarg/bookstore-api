@@ -1,8 +1,8 @@
 import express from 'express';
-import Book from '../models/Book';
 import User from '../models/User';
 import Cart from '../models/Cart';
-
+import Order from '../models/Order';
+import Userbook from '../models/UserBook';
 const router = express.Router();
 
 router.get('/getUserCartItems', (req, res) => {
@@ -26,10 +26,10 @@ router.post('/addToCart', (req, res) => {
     const username = req.body.username;
     User.findOne({username}, (err, user) => {
         if(err){
-            res.status(400).json({ errors: "Invalid User" })
+            res.status(400).json({ errors: "Invalid User" });
         } else{
             Cart.findOneAndUpdate({userId:user._id,bookId:book._id}, {$inc : {'quantity' : 1}},
-                { new: true }).then(cartItem => {
+                { new: true }, (err,cartItem) => {
                 if(cartItem){
                     Cart.find({userId:user._id},(err, cartItems) => {
                         res.json({ success:true,cartItems });
@@ -43,14 +43,12 @@ router.post('/addToCart', (req, res) => {
                         quantity:1,
                         pricePerUnit:book.price
                     });
-                    item.save().then(res => {
+                    item.save().then(i => {
                         Cart.find({userId:user._id},(err, cartItems) => {
-                            res.json({ success:true,cartItems });
+                           return res.json({ success:true,cartItems });
                         }); 
                     })
-                    .catch(err => {
-                        res.status(400).json({ errors:err.errors });
-                    });
+                    .catch(err => res.status(400).json({ errors:err.errors }));
                 }
             });
         }
@@ -83,4 +81,47 @@ router.post('/updateQuantity', (req, res) => {
         }
     });
 });
+
+router.post('/checkout', (req, res) => {
+    const username = req.body.username;
+    User.findOne({username}, (err, user) => {
+        if(err){
+            res.status(400).json({ errors: "Invalid User" })
+        } else{
+            Cart.find({userId:user._id}).then(cartItems => {
+                if(cartItems){
+                    let total=0;
+                    cartItems.forEach(cI=>{
+                        total+=(cI.quantity*cI.pricePerUnit);
+                        const userbook=new Userbook({
+                            userId:cI.userId,
+                            bookId:cI.bookId
+                        })
+                        Userbook.findOne({bookId:cI.bookId},(err,book)=>{
+                            if(!book)
+                            {
+                                userbook.save();
+                            }
+                        });
+                    });
+                    const order = new Order({
+                        userId:user._id,
+                        TotalOrderPrice:total,
+                        Status:'In Processing',
+                        orderItems:cartItems
+                    });
+                    order.save().then(o => {
+                        //add unique cart books to user books collection
+                        Cart.remove({userId:user._id}).then(c=>{
+                            res.json({ success:true,cartItems:[] });
+                        }); 
+                    }); 
+                }
+                else{  res.status(400).json({ errors: err.errors });   
+                }
+            });
+        }
+    });
+});
+
 export default router;
