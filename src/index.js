@@ -9,7 +9,7 @@ import auth from './routes/auth';
 import users from './routes/user';
 import books from './routes/book';
 import carts from './routes/cart';
-import Cart from './models/Cart';
+import orders from './routes/order';
 
 dotenv.config();
 const app = express();
@@ -22,6 +22,7 @@ app.use('/api/auth', auth);
 app.use('/api/users', users);
 app.use('/api/books', books);
 app.use('/api/carts', carts);
+app.use('/api/orders', orders);
 
 app.get("/*",(req,res)=>{
     res.sendFile(path.join(__dirname,"index.html"));

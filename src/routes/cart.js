@@ -111,13 +111,12 @@ router.post('/checkout', (req, res) => {
                         orderItems:cartItems
                     });
                     order.save().then(o => {
-                        //add unique cart books to user books collection
                         Cart.remove({userId:user._id}).then(c=>{
                             res.json({ success:true,cartItems:[] });
                         }); 
                     }); 
                 }
-                else{  res.status(400).json({ errors: err.errors });   
+                else {  res.status(400).json({ errors: err.errors });   
                 }
             });
         }
