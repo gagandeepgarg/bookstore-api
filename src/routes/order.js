@@ -1,8 +1,10 @@
 import express from 'express';
 import User from '../models/User';
 import Order from '../models/Order';
+import authenticate from '../middlewares/authenticate';
 
 const router = express.Router();
+router.use(authenticate);
 
 router.get('/loadUserOrdersData', (req, res) => {
     const pageNumber = req.query.pageNumber;

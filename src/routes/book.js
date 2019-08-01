@@ -2,9 +2,12 @@ import express from 'express';
 import Book from '../models/Book';
 import User from '../models/User';
 import UserBook from '../models/UserBook';
+import authenticate from '../middlewares/authenticate';
 
 const router = express.Router();
+router.use(authenticate);
 
+//router.get('/getBooksData',authenticate, (req, res) => {
 router.get('/getBooksData', (req, res) => {
     const pageNumber = req.query.pageNumber;
     const filesPerPage = req.query.filesPerPage;

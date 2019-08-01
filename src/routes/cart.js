@@ -3,7 +3,10 @@ import User from '../models/User';
 import Cart from '../models/Cart';
 import Order from '../models/Order';
 import Userbook from '../models/UserBook';
+import authenticate from '../middlewares/authenticate';
+
 const router = express.Router();
+router.use(authenticate);
 
 router.get('/getUserCartItems', (req, res) => {
     const username = req.query.username;
@@ -107,7 +110,7 @@ router.post('/checkout', (req, res) => {
                     const order = new Order({
                         userId:user._id,
                         TotalOrderPrice:total,
-                        Status:'In Processing',
+                        Status:'Successfull',
                         orderItems:cartItems
                     });
                     order.save().then(o => {
